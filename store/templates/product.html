@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Learn more about our product.</h1>
+        </div>
+    </div>
+</header></br></br>
+
+<div class="container">
+    <div class="card mb-3 shadow p-4 mb-5 bg-body rounded">
+      <div class="row g-0">
+        <div class="col-md-4" >
+          <img src="{{ product.image.url }}" class="img-fluid rounded-start shadow bg-body rounded" alt="...">
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <center><br/><br/>
+            <strong><h2 class="card-title container">{{ product.name }}</h2></strong>
+            <strong><h5 class="card-title container">{{ product.category }}</h5></strong><br/><br/>
+            <p class="card-text">{{ product.description }}</p>
+            {% if product.is_sale %}
+            <div class="d-flex justify-content-center small text-warning mb-2">
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+            </div>
+            <!-- Product price-->            
+            <strike>{{ product.price }}</strike><strong> {{ product.sale_price }}$</br></strong>            
+            {% else %}
+            <div class="d-flex justify-content-center small text-warning mb-2">
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+                <div class="bi-star-fill"></div>
+            </div>
+            <!-- Product price-->            
+            <strong>{{ product.price }}$</br></strong>  
+            {% endif %}
+            <br/>
+            <div class="row justify-content-center">
+                <div class="col-md-2">Quantity:</div>
+                <div class="col-md-2">
+            <select class="form-select form-select-sm" id="qty-cart">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>         
+                </div>
+            </div>
+            <br/>
+            <a href="{% url 'home' %}" class="btn btn-dark btn-lg">Return To Home Page &#127936;&#128168; </a>
+            <button type="button" value="{{ product.id }}" class="btn btn-dark btn-lg" id="add-cart">Add To Cart &#x1F6D2;</button>
+            </center>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<script>
+$(document).on('click','#add-cart', function(e){
+    e.preventDefault();
+    $.ajax({
+        type: 'POST',
+        url: '{% url 'cart_add' %}',
+        data: {
+    product_id: $('#add-cart').val(),
+    product_qty: $('#qty-cart option:selected').text(), 
+    csrfmiddlewaretoken: '{{ csrf_token }}',
+    action: 'post'
+        },
+        success: function(json) {
+            document.getElementById("cart_quantity").textContent = json.qty;
+            location.reload();
+        },
+        error: function(xhr, errmsg, err){
+
+        }
+
+    });
+
+})
+</script>
+
+{% endblock %}
